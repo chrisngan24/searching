@@ -5,8 +5,9 @@ import gzip
 import re
 
 from xml.dom import pulldom
-import xml.etree.ElementTree as ET
 import xml
+
+from util.Tokenizer import Tokenizer
 class TRECReader:
     def __init__(self, 
             trec_file,
@@ -24,7 +25,6 @@ class TRECReader:
         self.doc_id_tag = doc_id_tag
         self.doc_end_tag = doc_end_tag 
         self.file_stream = open(self.infile_name, 'r')
-        self.doc_streamer = pulldom.parse(self.file_stream)
         self.relevant_tags = relevant_tags + [doc_id_tag]
 
 
@@ -45,11 +45,18 @@ class TRECReader:
 
 
     def stream_docs(self):
+        """
+        Generator that streams a dictionary
+        with:
+          @doc_id      - identifier of the document
+          @doc_content - raw text of the document
+        """
         ## Pull out the doc
         #for event, node in self.pull_xml_parser():
         for doc_content in  self.next_doc():
             tag_stack = []
             # parse the xml into a streamer
+            str_buffer = []
             for event, node in pulldom.parseString(doc_content):
                 if node.nodeName in self.relevant_tags:
                     if event == pulldom.START_ELEMENT:
@@ -60,8 +67,13 @@ class TRECReader:
                     # peek the stack
                     peeked_val = tag_stack[len(tag_stack)-1]
                     if peeked_val == self.doc_id_tag:
-                        doc_id = node.nodeValue
-                        #print doc_id
+                        doc_id = node.nodeValue.strip()
                     else:
-                        print node.nodeValue
-                        pass
+                        str_buffer.append(node.nodeValue)
+
+            # so we don't have to keep creating new strings
+            doc_content = ''.join(str_buffer)
+            yield dict(
+                    doc_id=doc_id,
+                    doc_content=doc_content,
+                    )
