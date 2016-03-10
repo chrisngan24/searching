@@ -51,5 +51,5 @@ if __name__ == '__main__':
             index.save(index_file)
     else:
         print 'Loading the index from', index_file
-        index.load(index_file)
+        index = index.load(index_file)
     import pdb; pdb.set_trace()
