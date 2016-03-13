@@ -8,6 +8,7 @@ from xml.dom import pulldom
 import xml
 
 from util.Tokenizer import Tokenizer
+
 class TRECReader:
     def __init__(self, 
             trec_file,

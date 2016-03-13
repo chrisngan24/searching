@@ -3,6 +3,9 @@ class Lexicon:
         self.mapper = {}
         self.inv_mapper = [] # all mapped values are keys
 
+    def has_key(self, k):
+        return self.mapper.has_key(k)
+
     def map_k_to_v(self,k):
         if not self.mapper.has_key(k):
             self.mapper[k] = len(self.inv_mapper)

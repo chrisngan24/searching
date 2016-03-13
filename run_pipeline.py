@@ -7,6 +7,7 @@ from optparse import OptionParser
 def get_options():
     parser = OptionParser()
     parser.add_option("-f", "--file", dest="filename",
+            require=True,
             help="Data file to load data from",
             default='data/latimes.sample.txt')
     parser.add_option("-i", "--index",
@@ -16,19 +17,12 @@ def get_options():
 
     return parser.parse_args()
 
-
-
-if __name__ == '__main__':
-
-    option, args = get_options()
-
-    index_file = option.index 
-
+def build_index(filename, index_file = None):
     index = Index() 
     if index_file == '' or \
         (index_file != '' and not index.can_load(index_file)):
         print 'Recomputing the index'
-        tr = TRECReader(option.filename)
+        tr = TRECReader(filename)
         t = Tokenizer()
         doc_count = 0
         
@@ -52,4 +46,16 @@ if __name__ == '__main__':
     else:
         print 'Loading the index from', index_file
         index = index.load(index_file)
+
+    return index
+if __name__ == '__main__':
+
+    option, args = get_options()
+
+    index_file = option.index 
+    index = build_index(
+            option.filename, 
+            index_file = index_file,
+            )
+
     import pdb; pdb.set_trace()
