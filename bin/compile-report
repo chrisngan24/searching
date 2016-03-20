@@ -1,0 +1,9 @@
+python file_printer.py
+pandoc report.md \
+  -s \
+  --latex-engine=xelatex \
+  --toc  \
+  -V documentclass=report \
+  -V geometry:margin=0.5in \
+  --highlight-style espresso \
+  -o report.pdf

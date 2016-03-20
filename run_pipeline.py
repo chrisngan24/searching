@@ -2,20 +2,12 @@ from pipeline.TRECReader import TRECReader
 from util.Tokenizer import Tokenizer
 from util.Index import Index 
 
+import util
+
 from optparse import OptionParser
 
-def get_options():
-    parser = OptionParser()
-    parser.add_option("-f", "--file", dest="filename",
-            require=True,
-            help="Data file to load data from",
-            default='data/latimes.sample.txt')
-    parser.add_option("-i", "--index",
-            help="File to load/save index from",
-            default='',
-            )
 
-    return parser.parse_args()
+
 
 def build_index(filename, index_file = None):
     index = Index() 
@@ -50,7 +42,7 @@ def build_index(filename, index_file = None):
     return index
 if __name__ == '__main__':
 
-    option, args = get_options()
+    option, args = util.get_options()
 
     index_file = option.index 
     index = build_index(

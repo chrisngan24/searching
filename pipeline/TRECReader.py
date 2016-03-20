@@ -18,20 +18,26 @@ class TRECReader:
                 'HEADLINE',
                 'TEXT',
                 'GRAPHIC',
+                'SUBJECT', # as per given src code
                 ]
             ):
-        # Reads gzip files
+        if trec_file.endswith('.gz'):
+            # Reads gzip files
+            self.file_stream = gzip.open(trec_file, 'r')
+        else:
             # general text file
+            self.file_stream = open(trec_file, 'r')
         self.infile_name = trec_file
         self.doc_id_tag = doc_id_tag
         self.doc_end_tag = doc_end_tag 
-        self.file_stream = open(self.infile_name, 'r')
         self.relevant_tags = relevant_tags + [doc_id_tag]
 
 
     def next_doc(self):
         """
         Load one doc at a time, no need to load whole thing in mem
+        Reads a single doc into memory so that it
+        can be processed by an xml tree
         """
         doc_content = ''
         for line in self.file_stream:
@@ -58,16 +64,22 @@ class TRECReader:
             tag_stack = []
             # parse the xml into a streamer
             str_buffer = []
+            doc_id = ''
             for event, node in pulldom.parseString(doc_content):
                 if node.nodeName in self.relevant_tags:
                     if event == pulldom.START_ELEMENT:
+                        # next set of text is within
+                        # some relevant tag
                         tag_stack.append(node.nodeName)
                     if event == pulldom.END_ELEMENT:
                         tag_stack.pop()
                 elif event == pulldom.CHARACTERS and len(tag_stack) > 0:
-                    # peek the stack
+                    # is within a relevant stack an
+                    # interested in reading the document
+
                     peeked_val = tag_stack[len(tag_stack)-1]
                     if peeked_val == self.doc_id_tag:
+                        # This is the docID
                         doc_id = node.nodeValue.strip()
                     else:
                         str_buffer.append(node.nodeValue)

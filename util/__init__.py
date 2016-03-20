@@ -34,6 +34,6 @@ class MinHeap:
     def put(self, score, data):
         heapq.heappush(self.heap, (score,data))
         if self.maxsize != -1 and self.qsize() > self.maxsize:
-            heapq.pop(self.heap)
+            heapq.heappop(self.heap)
     def get_min(self):
         return heapq.heappop(self.heap)

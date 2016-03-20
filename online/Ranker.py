@@ -3,6 +3,8 @@ from util.Index import Index
 from util import MinHeap
 import math
 
+from collections import Counter
+
 
 class Ranker:
     """
@@ -56,13 +58,15 @@ class Ranker:
 
     def compute_score(self, doc, tokens, k1=1.2, b=0.75, k2=7):
         """
-        Can be easily overriden for
+        Compute the document score with BM25
         different scoring functions
         """
         score = 0
-        for token in tokens:
+        counter = Counter(tokens)
+        terms = set(tokens)
+        for token in terms:
             fi = doc['term_hash'][token]['term_frequency']
-            qfi = 1 #TODO
+            qfi = counter[token] # number of times term shows up in query
             ni = doc['term_hash'][token]['count_of_docs_with_term']
             dl = doc['doc_length']
             N = doc['coll_doc_count']
